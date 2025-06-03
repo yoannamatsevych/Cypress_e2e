@@ -14,10 +14,12 @@ Validate the phone number is “(224) 580-2150”
 */
 
 it('Test case 01', () => {
-    cy.get('.is-size-3').should('have.text', 'Contact Us');
-    cy.get('#address').should('have.text', '2800 S River Rd Suite 310, Des Plaines, IL 60018');
-    cy.get('#email').should('have.text', 'info@techglobalschool.com');
-    cy.get('#phone-number').should('have.text', '(224) 580-2150');
+    cy.get('.is-size-3').as('header').should('have.text', 'Contact Us');
+    const expectedText = ['2800 S River Rd Suite 310, Des Plaines, IL 60018', 'info@techglobalschool.com', '(224) 580-2150']
+    
+    cy.get('@header').nextAll().each(($ele, index) => {
+        cy.wrap($ele).should('have.text', expectedText[index]);
+    })
 })
 
 /*
@@ -32,13 +34,10 @@ it('Test case 02', () => {
 
     cy.get('[placeholder *= "full name"]')
   .should('be.visible')
-  .then($el => {
-    expect($el).to.have.attr('placeholder', 'Enter your full name');
-
-    // Check if required prop is true
-    expect($el.prop('required')).to.be.true;
-  });
-
+  .and('have.attr', 'placeholder', 'Enter your full name')
+  .and('have.attr', 'required')
+  
+  
     cy.get('[for = "name"]').should('have.text', 'Full name *');
 
 })
@@ -57,22 +56,19 @@ it('Test Case 03', () => {
     cy.get('.label').eq(1).should('have.text', 'Gender *');
     cy.get('.radio input').eq(0).should('have.attr', 'required');
 
-    const options = ['Male', 'Female', 'Prefer not to disclose'];
+    const expectedText = ['Male', 'Female', 'Prefer not to disclose'];
     
     cy.get('[class ^= "radio"]').each(($el, index) => {
-        cy.wrap($el).should('have.text', options[index]);
+        cy.wrap($el).should('have.text', expectedText[index]);
         cy.wrap($el).find('input').should('be.visible')
-        .and('be.enabled').and('not.be.checked');
+        .and('be.enabled').and('not.be.selected');
 
-        if($el.text() === 'Male'){
-            cy.wrap($el).find('input').check()
-            .should('be.checked');
-        }
-        else if ($el.text() === 'Female'){
-            cy.wrap($el).find('input').check()
-            .should('be.checked');
-        }
     })
+
+    cy.checkOptionsAndValidateOthers('Male', expectedText);
+    cy.checkOptionsAndValidateOthers('Female', expectedText);
+
+
 
     })
 
@@ -144,6 +140,46 @@ it('Test Case 03', () => {
 
     })
 
+
+
+    const testCases = [
+    {
+        description: "Address input box",
+        label: 'Address',
+        placeholder: 'Enter your address',
+        required: false
+    },
+    {
+        description: "Email input box",
+        label: 'Email *',
+        placeholder: 'Enter your email',
+        required: true
+    },
+    {
+        description: "Phone input box",
+        label: 'Phone',
+        placeholder: 'Enter your phone number',
+        required: false
+    },
+    {
+        description: "Message input box",
+        label: 'Message',
+        placeholder: 'Type your message here...',
+        required: false
+    }
+    ]
+
+    testCases.forEach((test, index) => {
+        it(`Test Case ${index + 4} - ${test.description}`, () => {
+            cy.contains('label', test.label).should('have.text', test.label)
+            cy.contains('label', test.label).parent().find('input, textarea')
+            .should('be.visible')
+            .and('have.attr', 'placeholder', test.placeholder)
+            .and(test.required ? 'have.attr' : 'not.have.attr', 'required')
+        });
+    })
+
+
     it('Test Case 08', () => {
         /*
         Navigate to https://techglobal-training.com/frontend/form-elements
@@ -155,6 +191,10 @@ it('Test Case 03', () => {
         */
 
     cy.get('.checkbox').should('have.text', ' I give my consent to be contacted.')
+
+    cy.get('.checkbox').then(($txt) => {
+        expect($txt.text().trim()).to.be.equal('I give my consent to be contacted.')
+    })
 
     cy.get('.checkbox').find('input')
     .should('be.enabled')
@@ -218,18 +258,13 @@ it('Test Case 03', () => {
 */
 
     cy.get('.control').then(($el) => {
-       
-
         for(let index = 0; index < inputData.length; index++){
             const ele = $el.eq(index);
             if(index === 1) {
                 cy.wrap(ele).find('label').contains(inputData[index]).find('input').check();
             }
-            else if(index === 5){
-                cy.wrap(ele).find('textarea').type(inputData[index])
-            }
             else{
-                cy.wrap(ele).find('input').type(inputData[index])
+                cy.wrap(ele).find('.input, textarea').type(inputData[index])
             }
         }
     })
