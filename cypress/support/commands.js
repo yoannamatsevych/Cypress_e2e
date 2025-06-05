@@ -13,9 +13,12 @@
 // Cypress.Commands.add('login', (email, password) => { ... })
 
 Cypress.Commands.add('clickCard', (link) => { 
-    cy.contains('.card', link).click();
+    cy.contains('.card, [class *="projectCard"]', link).click();
  })
 
+ Cypress.Commands.add('selectDropdown', (locator, option) => {
+    cy.get(locator).select(option)
+   })
  /**
   * 
   * @param {*} a 
@@ -74,9 +77,10 @@ Cypress.Commands.add('logText', {prevSubject: true}, (subject, addOne, addTwo) =
 
 //Create a child function that validates the text of the web element
 
-Cypress.Commands.add('textValidation', {prevSubject: true}, (subject, expectedText) => {
-    cy.wrap(subject).should('have.text', expectedText);
-})
+Cypress.Commands.add('haveText', { prevSubject: 'element' }, (subject, expectedText) => {
+    // expect(subject.text()).to.equal(expectedText)
+    cy.wrap(subject).should('have.text', expectedText)
+  })
 
 //
 
@@ -90,7 +94,7 @@ Cypress.Commands.add('textValidation', {prevSubject: true}, (subject, expectedTe
  */
  
   
-Cypress.Commands.add('asserrtAttribute', {prevSubject: true}, (subject, attribute, value = null) => {
+Cypress.Commands.add('assertAttribute', {prevSubject: true}, (subject, attribute, value = null) => {
    if(value === null){
     cy.wrap(subject).should('have.attr', attribute)
    } else{

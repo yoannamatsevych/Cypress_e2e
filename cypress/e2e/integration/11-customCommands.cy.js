@@ -6,10 +6,17 @@ describe('Assertions', () => {
     })
 
     it('Parent command', () => {
-        //cy.get();
-        //cy.visit();
-        cy.url();
-        cy.title();
+        /* Parent Command */
+    // cy.get()
+    // cy.url()
+    // cy.title()
+    // cy.visit()
+    // cy.window()
+    // cy.on()
+
+    cy.selectDropdown('#company_dropdown1', 'Apple')
+
+    cy.submitInfoOnFocusSection('techglobal@tech.com', 'global')
     })
 
     it('Practice', () => {
@@ -17,12 +24,21 @@ describe('Assertions', () => {
     })
 
     it('Child Command', () => {
-        cy.get('#register_button').textValidation('Register')
-        cy.get('#register_button').logText().textValidation('Register')
-        cy.get('#register_button').asserrtAttribute('id')
-        cy.get('#register_button').asserrtAttribute('id', 'register_button');
+    /* Child Commands */
+    // .should()
+    // .find()
+    // All the action commands
 
-       // cy.log(Cypress.env('UI_URL', 'https://qa.www.techglobal-training.com/'))
+    cy.get('#main_heading').logText()
+
+    cy.get('#main_heading').haveText('HTML Elements')
+
+    cy.get('#main_heading').logText().haveText('HTML Elements')
+
+    cy.get('#main_heading').assertAttribute('id')
+    cy.get('#main_heading').assertAttribute('id', 'main_heading')
+
+        //cy.log(Cypress.env('UI_URL', 'https://qa.www.techglobal-training.com/'))
         cy.log(Cypress.env('UI_URL'))
     })
 

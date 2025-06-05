@@ -17,6 +17,7 @@
 import './commands';
 import "cypress-real-events";
 import '@4tw/cypress-drag-drop';
+require('dotenv').config();
 
 beforeEach(() => {
     cy.visit('https://www.techglobal-training.com/frontend')
